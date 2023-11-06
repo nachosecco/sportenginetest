@@ -3,10 +3,14 @@ import HttpError from '@wasp/core/HttpError.js'
 export const createUser = async (args, context) => {
   if (!context.user) { throw new HttpError(401) };
 
-  // Implement the logic to create a new user with the provided details
-  // Make sure to handle any potential errors
-
-  // Return the created user
+  return context.entities.User.create({
+    data: {
+      username: args.username,
+      password: args.password,
+      role: args.role, 
+      team: { connect: { id: args.teamId } } 
+    }
+  });
 }
 
 export const createMatch = async (args, context) => {

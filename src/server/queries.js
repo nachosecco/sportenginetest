@@ -1,5 +1,17 @@
 import HttpError from '@wasp/core/HttpError.js'
 
+export const getRoles = async (_, context) => {
+  if (!context.user) { throw new HttpError(401) }
+
+  return context.entities.Role.findMany();
+}
+
+export const getTeams = async (_, context) => {
+  if (!context.user) { throw new HttpError(401) }
+
+  return context.entities.Team.findMany();
+}
+
 export const getUser = async (args, context) => {
   if (!context.user) { throw new HttpError(401) }
 

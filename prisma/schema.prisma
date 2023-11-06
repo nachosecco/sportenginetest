@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Match_events {
+  id          Int       @id @default(autoincrement())
+  match_id    Int
+  player_id   Int
+  position_id Int
+  type        String    @db.VarChar(255)
+  quantity    Int       @default(0)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  Matches     Matches   @relation(fields: [match_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "match_events_ibfk_1")
+  Players     Players   @relation(fields: [player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "match_events_ibfk_2")
+  Positions   Positions @relation(fields: [position_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "match_events_ibfk_3")
+
+  @@index([match_id], map: "match_id")
+  @@index([player_id], map: "player_id")
+  @@index([position_id], map: "position_id")
+}
+
+model Matches {
+  id           Int            @id @default(autoincrement())
+  opponent_id  Int
+  status       String         @db.VarChar(255)
+  date         DateTime       @db.DateTime(0)
+  created_at   DateTime?      @default(now()) @db.Timestamp(0)
+  Match_events Match_events[]
+  Opponents    Opponents      @relation(fields: [opponent_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "matches_ibfk_1")
+
+  @@index([opponent_id], map: "opponent_id")
+}
+
+model Opponents {
+  id      Int       @id @default(autoincrement())
+  name    String    @db.VarChar(255)
+  address String?   @db.VarChar(255)
+  Matches Matches[]
+}
+
+model Players {
+  id           Int            @id @default(autoincrement())
+  first_name   String         @db.VarChar(255)
+  last_name    String         @db.VarChar(255)
+  position_id  Int
+  created_at   DateTime?      @default(now()) @db.Timestamp(0)
+  Match_events Match_events[]
+  Positions    Positions      @relation(fields: [position_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "players_ibfk_1")
+
+  @@index([position_id], map: "position_id")
+}
+
+model Positions {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  Match_events Match_events[]
+  Players      Players[]
+}
+
+model Tags {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+}
+
+model Users {
+  id         Int       @id @default(autoincrement())
+  first_name String    @db.VarChar(255)
+  last_name  String    @db.VarChar(255)
+  email      String    @db.VarChar(255)
+  password   String    @db.VarChar(255)
+  role       Role      @relation("userToRole", fields: [roleId], references: [id])
+  roleId     Int
+  team       Team      @relation("userToTeam", fields: [teamId], references: [id])
+  teamId     Int
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+  users Users[] @relation("userToRole")
+}
+
+model Team {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+  users Users[] @relation("userToTeam")
+}

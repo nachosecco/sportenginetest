@@ -30,25 +30,30 @@ page SignupPage {
   component: import Signup from "@client/pages/auth/Signup.jsx"
 }
 
-entity User {=psl
-        id Int @id @default(autoincrement())
-        username String @unique
-        password String
-        role String
-        team Team
-        messagesSent Message[] @relation("SentMessages")
-        messagesReceived Message[] @relation("ReceivedMessages")
-        tasks Task[]
-        stats Stat[]
-        matches Match[]
-        notifications Notification[]
+entity Role {=psl
+  id Int @id @default(autoincrement())
+  name String
 psl=}
 
 entity Team {=psl
-        id Int @id @default(autoincrement())
-        name String
-        users User[]
-        matches Match[]
+  id Int @id @default(autoincrement())
+  name String
+psl=}
+
+entity User {=psl
+  id Int @id @default(autoincrement())
+  username String @unique
+  password String
+  role Role @relation(fields: [roleId], references: [id])
+  roleId Int
+  team Team @relation(fields: [teamId], references: [id])
+  teamId Int
+  messagesSent Message[] @relation("SentMessages")
+  messagesReceived Message[] @relation("ReceivedMessages")
+  tasks Task[]
+  stats Stat[]
+  matches Match[]
+  notifications Notification[]
 psl=}
 
 entity Match {=psl
