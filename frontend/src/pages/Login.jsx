@@ -47,7 +47,7 @@ const Login = () => {
       });
       setAlerta({});
       localStorage.setItem("token", data.token);
-      setAuth(data);
+      setAuth({ ...data, role: data.role });
       navigate("/events");
     } catch (error) {
       setAlerta({

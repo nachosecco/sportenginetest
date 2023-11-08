@@ -12,7 +12,7 @@ import ConfirmarCuenta from "./pages/ConfirmarCuenta";
 import Login from "./pages/Login";
 import NuevoPassword from "./pages/NuevoPassword";
 import OlvidePassword from "./pages/OlvidePassword";
-import Registrar from "./pages/Registrar";
+import Signup from "./pages/Signup";
 import MyProfile from "./pages/MyProfile";
 
 import NotFound from "./components/NotFound";
@@ -51,7 +51,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<AuthLayout />}>
                     <Route index element={<Login />} />
-                    <Route path="registrar" element={<Registrar />} />
+                    <Route path="registrar" element={<Signup />} />
                     <Route
                       path="olvide-password"
                       element={<OlvidePassword />}
