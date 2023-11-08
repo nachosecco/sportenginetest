@@ -14,14 +14,14 @@ const teamSchema = mongoose.Schema(
       unique: false,
     },
     headCoach: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
-      unique: false,
     },
     manager: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
-      unique: false,
     },
     location: {
       type: String,
