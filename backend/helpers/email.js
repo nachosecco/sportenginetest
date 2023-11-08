@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 export const emailSignup = async (data) => {
-    const { email, name, token } = data;
+  const { email, token, link } = data;
 
     // TODO: mover a  variables env
     const transport = nodemailer.createTransport({
@@ -20,10 +20,11 @@ export const emailSignup = async (data) => {
         subject: "Rugby MERN - Confirma tu cuenta",
         text: "Confirma tu cuenta",
         html: `
-            <p>Hola ${name}, comprueba tu cuenta de Rugby MERN</p>
-            <p>Tu cuenta ya está casi lista, solo tienes que confirmarla en el siguiente enlace:
-                <a href="${process.env.FRONTEND_URL}/confirmar/${token}">Comprobar cuenta</a>
-            </p>
+        <p>Hola ${email}!</p>
+        <p>Has ${inviter} te ha invitado a formar parte de ${Team} </p>
+        <p>Tu cuenta ya está casi lista, solo tienes que confirmarla haciendo click en el siguiente enlace:
+            <a href="${link}">Confirmar cuenta</a>
+        </p>
         `
 
       })

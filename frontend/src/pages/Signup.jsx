@@ -7,11 +7,12 @@ import useAuth from "../hooks/useAuth";
 import { useFirebase } from "../hooks/useFirebase";
 import { useGenerations } from "../hooks/useGenerations";
 
-const Registrar = () => {
+const Signup = () => {
+  const query = new URLSearchParams(useLocation().search);
+  const [invitation, setInvitation] = query.get('invitation');
   const { isVisible } = useAuth();
   const { alert } = useGenerations();
   const { signUpWithGoogle, showFacebookPopUp } = useFirebase();
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,6 +64,7 @@ const Registrar = () => {
         name,
         email,
         password,
+        invitation
       });
       // accedemos al mensaje del servidor y lo pasamos como alerta
       setAlerta({
@@ -75,6 +77,7 @@ const Registrar = () => {
       setEmail("");
       setPassword("");
       setRepeatPassword("");
+      setInvitation("");
     } catch (error) {
       setAlerta({
         msg: error.response.data.msg,
@@ -237,4 +240,4 @@ const Registrar = () => {
   );
 };
 
-export default Registrar;
+export default Signup;

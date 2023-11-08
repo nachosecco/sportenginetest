@@ -37,6 +37,10 @@ const userSchema = mongoose.Schema(
         ref: "Role",
       },
     ],
+    team: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Team',
+    },
   },
   {
     timestamps: true,

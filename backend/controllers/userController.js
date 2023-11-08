@@ -1,19 +1,33 @@
 import { emailForgotPassword, emailSignup } from "../helpers/email.js";
-import generarJWT from "../helpers/generarJWT.js";
+import generarJWT from "../helpers/generateJWT.js";
 import generateId from "../helpers/generateId.js";
+import Role from '../models/Role.js';
+import Team from '../models/Team.js';
 import User from "../models/User.js";
 
 const signUp = async (req, res) => {
-  const { email } = req.body;
+  const { email, password, invitation } = req.body;
   const existingUser = await User.findOne({ email: email });
+
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(invitation, process.env.JWT_SECRET);
+  } catch (error) {
+    return res.status(400).json({ msg: 'Invalid or expired invitation token.' });
+  }
+
+  const { role: roleId, team: teamId } = decodedToken;
+
   if (existingUser) {
-    // TODO: fetch error message from Constants 
+    // TODO: fetch error message from ErrorMessages File & Create File 
     const error = new Error("Usuario ya registrado");
     return res.status(400).json({ msg: error.message });
   }
 
   try {
     const user = new User(req.body);
+    user.role = roleId;
+    user.team = teamId;
     user.token = generateId();
     await user.save(); // Wait until user is created
 
@@ -21,10 +35,14 @@ const signUp = async (req, res) => {
       email: user.email,
       name: user.name,
       token: user.token,
+      link: `${process.env.FRONTEND_URL}/signup?invitation=${token}`
     });
+  
+    res.status(200).json({ msg: 'Invitation sent successfully.' });
+  
 
     res.json({
-      // TODO: fetch confirmation message from Constants
+      // TODO: fetch error message from ErrorMessages File & Create File 
       msg: "Usuario creado correctamente, revisa tu correo para confirmar tu cuenta",
     });
   } catch (error) {
@@ -32,11 +50,38 @@ const signUp = async (req, res) => {
   }
 };
 
+// New endpoint to invite a user
+const inviteUser = async (req, res) => {
+  const { email, roleId, teamId } = req.body;
+  const existingUser = await User.findOne({ email });
+
+  if (existingUser) {
+    if (existingUser.role.toString() !== roleId) {
+      existingUser.role = roleId;
+      await existingUser.save();
+    }
+    // User already exists with the same role, do nothing
+    return res.status(200).json({ msg: 'User already exists with the given role.' });
+  }
+
+  // Create a token with role and team info
+  const token = generarJWT({ role: roleId, team: teamId }, '24h'); // Set an expiration for the token
+
+  // Send an email with the 'magic' link
+  emailSignup({
+    email,
+    token,
+    link: `${process.env.FRONTEND_URL}/signup?invitation=${token}`
+  });
+
+  res.status(200).json({ msg: 'Invitation sent successfully.' });
+};
+
 const checkUser = async (req, res) => {
   const { email } = req.params;
   const existingUser = await User.findOne({ email: email });
   if (existingUser) {
-    // TODO: fetch error message from Constants
+    // TODO: fetch error message from ErrorMessages File & Create File 
     const error = new Error("Usuario ya registrado");
     return res.status(400).json({ msg: error.message });
   }
@@ -48,6 +93,7 @@ const firebaseRegister = async (req, res) => {
   const { email } = req.body;
   const existingUser = await User.findOne({ email: email });
   if (existingUser) {
+    // TODO: fetch error message from ErrorMessages File & Create File 
     const error = new Error("Usuario ya registrado");
     return res.status(400).json({ msg: error.message });
   }
@@ -64,6 +110,7 @@ const firebaseRegister = async (req, res) => {
     });
 
     res.json({
+      // TODO: fetch success message from SuccessMessages File & Create File 
       msg: "Usuario creado correctamente, revisa tu correo para confirmar tu cuenta",
     });
   } catch (error) {
@@ -74,7 +121,7 @@ const firebaseRegister = async (req, res) => {
 const autenticar = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  // comprobar si el usuario no existe
+  // Check or User instance
   if (!user) {
     const error = new Error("El usuario no está registrado");
     return res.status(404).json({ msg: error.message });
@@ -84,7 +131,7 @@ const autenticar = async (req, res) => {
     return res.status(403).json({ msg: error.message });
   }
 
-  //comprobar pwd
+  // Check pwd
   if (await user.comprobarPassword(password)) {
     res.json({
       _id: user._id,
@@ -120,19 +167,18 @@ const firebaseAuthentication = async (req, res) => {
 };
 
 const confirmar = async (req, res) => {
-  const { token } = req.params; // leemos el token de la url
-  // buscamos el usuario con el token dado en url
+  const { token } = req.params; // Decrypt toke from URL
   const usuarioConfirmar = await User.findOne({ token });
 
-  // si el token no se encuentra en DB
+  // Invalid token
   if (!usuarioConfirmar) {
     const error = new Error("Token no valido");
     return res.status(403).json({ msg: error.message });
   }
-  // si el token se encuntra en DB
+  // Valid token
   try {
     usuarioConfirmar.confirmed = true;
-    usuarioConfirmar.token = ""; //borramos el token al confirmar el usuario (token de un solo uso)
+    usuarioConfirmar.token = ""; // Token is deleted, one time use only
     await usuarioConfirmar.save();
     res.json({ msg: "Usuario confirmado correctamente" });
   } catch (error) {
@@ -143,7 +189,7 @@ const confirmar = async (req, res) => {
 const olvidePassword = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
-  // comprobar si el usuario no existe
+  // Check if User exists
   if (!user) {
     const error = new Error("El usuario no está registrado");
     return res.status(404).json({ msg: error.message });
@@ -155,7 +201,7 @@ const olvidePassword = async (req, res) => {
     res.json({
       msg: "Hemos enviado un email con las instrucciones para autenticar el usuario",
     });
-    //enviar email olvide pwd
+    // Send reset pwd email 
     emailForgotPassword({
       email: user.email,
       name: user.name,
@@ -226,4 +272,5 @@ export {
   perfil,
   signUp as registrar,
   searchUserByName,
+  inviteUser
 };
