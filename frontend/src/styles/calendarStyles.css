@@ -1,0 +1,31 @@
+.fc-day-sat, .fc-day-sun {
+    background-color: #CEDEBD !important; 
+}
+
+.fc-day-tue, .fc-day-thu {
+    background-color: #F39F5A !important; 
+}
+
+.fc-prev-button, .fc-next-button {
+    background-color: #1363DF !important;
+}
+
+.fc-today-button {
+    display: none !important;
+}
+
+
+.fc-col-header-cell {
+    background-color: #007BFF !important; 
+    color: white !important;
+}
+
+.fc-toolbar-title {
+    text-transform: capitalize;
+    background-color: #F1A661;
+    border-radius: 10px;
+    color: white;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
