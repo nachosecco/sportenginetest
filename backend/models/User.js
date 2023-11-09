@@ -31,12 +31,11 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    roles: [
+    role:
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Role",
       },
-    ],
     team: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Team',
