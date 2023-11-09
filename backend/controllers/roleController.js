@@ -1,6 +1,6 @@
 import Role from '../models/Role.js';
 
-export const getRoles = async (req, res) => {
+const getRoles = async (req, res) => {
   try {
     const roles = await Role.find({});
     res.json(roles);
@@ -8,3 +8,4 @@ export const getRoles = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+export { getRoles };

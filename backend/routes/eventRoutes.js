@@ -19,15 +19,15 @@ const router = express.Router();
 
 router.route('/')
     .get(checkAuth, obtenerEventos)
-    .post(checkAuth, checkRole(['Operations Role Group']), nuevoEvento);
+    .post(checkAuth, checkRole(['Operations']), nuevoEvento);
 
 router.route('/:id')
     .get(checkAuth, obtenerEvento)
-    .put(checkAuth, checkRole(['Operations Role Group']), editarEvento)
-    .delete(checkAuth, checkRole(['Operations Role Group']), eliminarEvento);
+    .put(checkAuth, checkRole(['Operations']), editarEvento)
+    .delete(checkAuth, checkRole(['Operations']), eliminarEvento);
 
-router.post('/deactivate/:id', checkAuth, checkRole(['Operations Role Group']), deactivateEvent);
-router.post('/change-ownership/:id', checkAuth, checkRole(['Operations Role Group']), changeOwnership);
+router.post('/deactivate/:id', checkAuth, checkRole(['Operations']), deactivateEvent);
+router.post('/change-ownership/:id', checkAuth, checkRole(['Operations']), changeOwnership);
 
 router.post('/colaboradores/:id',checkAuth, agregarColaborador);
 router.post('/colaboradores', checkAuth, buscarColaborador)
