@@ -2,6 +2,7 @@ import express from "express";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes.js";
+import roleRoutes from './routes/roleRoutes.js';
 import eventRoutes from "./routes/eventRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import generationRoutes from './routes/generationRoutes.js'
@@ -31,6 +32,7 @@ const corsOption = {
 app.use(cors()); // Delete corsOption parameter due to crashing app.
 
 app.use("/api/users", userRoutes);
+app.use('/api/roles', roleRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/generations", generationRoutes);

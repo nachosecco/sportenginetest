@@ -1,5 +1,5 @@
 import { emailForgotPassword, emailSignup } from "../helpers/email.js";
-import generarJWT from "../helpers/generateJWT.js";
+import generateJWT from "../helpers/generateJWT.js";
 import generateId from "../helpers/generateId.js";
 import Role from '../models/Role.js';
 import Team from '../models/Team.js';
@@ -65,7 +65,7 @@ const inviteUser = async (req, res) => {
   }
 
   // Create a token with role and team info
-  const token = generarJWT({ role: roleId, team: teamId }, '24h'); // Set an expiration for the token
+  const token = generateJWT({ role: roleId, team: teamId }, '24h'); // Set an expiration for the token
 
   // Send an email with the 'magic' link
   emailSignup({
@@ -120,7 +120,7 @@ const firebaseRegister = async (req, res) => {
 
 const autenticar = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).populate('role');
   // Check or User instance
   if (!user) {
     const error = new Error("El usuario no está registrado");
@@ -137,8 +137,9 @@ const autenticar = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      token: generarJWT(user._id),
-    });
+      role: user.role,
+      token: generateJWT(user._id, user.role.name),
+  });
   } else {
     const error = new Error("La contraseña es incorrecta");
     return res.status(403).json({ msg: error.message });
@@ -147,8 +148,7 @@ const autenticar = async (req, res) => {
 
 const firebaseAuthentication = async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
-
+  const user = await User.findOne({ email }).populate('role');
   if (!user) {
     const error = new Error("El usuario no está registrado");
     return res.status(404).json({ msg: error.message });
@@ -162,8 +162,9 @@ const firebaseAuthentication = async (req, res) => {
     _id: user._id,
     name: user.name,
     email: user.email,
-    token: generarJWT(user._id),
-  });
+    role: user.role.name,
+    token: generateJWT(user._id, user.role.name),
+}); 
 };
 
 const confirmar = async (req, res) => {

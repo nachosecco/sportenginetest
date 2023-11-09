@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-import { removeAccents } from "../helpers/removeAccents";
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
+import { removeAccents } from '../helpers/removeAccents';
+import InviteModal from './InviteModal';
 
 const Sidebar = () => {
   const { auth } = useAuth();
   const location = useLocation();
   const [path, setPath] = useState('');
   const [showPlayerInfo, setShowPlayerInfo] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const club = {
     name: "Trebol Rugby",
     logo: "/icons/trebol.png",
   };
+  console.log(auth.role)
 
   useEffect(() => {
     const currentPath = location.pathname.split('/')[1];
@@ -95,6 +98,18 @@ const Sidebar = () => {
         <h2 className="text-xl text-center font-semibold mb-2">{club.name}</h2>
         <img className="w-16 h-16 mx-auto" src={club.logo} alt={`${club.name} logo`} />
         <div className="border-b border-white mt-2"></div>
+        {auth.role.name === 'Admin' && (
+        <button
+          onClick={() => setIsInviteModalOpen(true)}
+          className="bg-green-600 hover:bg-green-700 text-white uppercase font-bold block mt-5 text-center rounded-lg p-3"
+        >
+          Invite New Members
+        </button>
+      )}
+      <InviteModal
+        isOpen={isInviteModalOpen}
+        onRequestClose={() => setIsInviteModalOpen(false)}
+      />
       </div>
     </aside>
   );

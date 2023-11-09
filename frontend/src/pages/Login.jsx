@@ -41,14 +41,17 @@ const Login = () => {
       return;
     }
     try {
-      const { data } = await clienteAxios.post("/users/login", {
+      const response = await clienteAxios.post("/users/login", {
         email,
         password,
       });
+      console.log(response);
+      
       setAlerta({});
-      localStorage.setItem("token", data.token);
-      setAuth({ ...data, role: data.role });
+      localStorage.setItem("token", response.data.token);
+      setAuth({ ...response.data, role: response.data.role });
       navigate("/events");
+      
     } catch (error) {
       setAlerta({
         msg: error.response.data.msg,
