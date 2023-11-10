@@ -6,6 +6,7 @@ import '../styles/generalStyles.css';
 function InviteModal({ isOpen, onRequestClose }) {
   const [roles, setRoles] = useState([]);
   const [invitees, setInvitees] = useState([{ email: '', role: '' }]);
+  const isSendButtonEnabled = invitees.some(invitee => invitee.email.trim() !== '');
 
   useEffect(() => {
     if (isOpen) {
@@ -39,12 +40,16 @@ function InviteModal({ isOpen, onRequestClose }) {
     setInvitees(newInvitees);
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    // Submit logic here
+  const handleSubmit = e => {
+    e.preventDefault();
+    // Filter out any invitees with empty emails
+    const validEmails = invitees.filter(invitee => invitee.email.trim() !== '');
+    if (validEmails.length > 0) {
+      // Proceed with sending invites
+    }
     onRequestClose();
-  }
-
+  };
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -99,7 +104,13 @@ function InviteModal({ isOpen, onRequestClose }) {
         ))}
         <div className="invite-form-actions">
           <button type="button" onClick={onRequestClose} className="invite-form-button">Cancel</button>
-          <button type="submit" className="invite-form-button invite-form-button-submit">Send Invites</button>
+          <button
+              type="submit"
+              disabled={!isSendButtonEnabled}
+              className={`invite-form-button-submit ${isSendButtonEnabled ? '' : 'disabled-button-class'}`}
+            >
+              Send Invites
+            </button>
         </div>
       </form>
     </Modal>

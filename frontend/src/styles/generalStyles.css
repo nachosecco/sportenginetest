@@ -96,3 +96,8 @@
     color: #fff;
   }
   
+  .disabled-button-class {
+    background: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
