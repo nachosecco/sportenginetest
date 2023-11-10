@@ -105,12 +105,12 @@ function InviteModal({ isOpen, onRequestClose }) {
         <div className="invite-form-actions">
           <button type="button" onClick={onRequestClose} className="invite-form-button">Cancel</button>
           <button
-              type="submit"
-              disabled={!isSendButtonEnabled}
-              className={`invite-form-button-submit ${isSendButtonEnabled ? '' : 'disabled-button-class'}`}
-            >
-              Send Invites
-            </button>
+            type="submit"
+            disabled={!isSendButtonEnabled}
+            className={`invite-form-button-submit ${!isSendButtonEnabled ? 'disabled-button-class' : ''}`}
+          >
+            Send Invites
+          </button>
         </div>
       </form>
     </Modal>
