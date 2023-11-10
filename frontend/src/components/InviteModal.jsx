@@ -5,30 +5,17 @@ import '../styles/generalStyles.css';
 
 function InviteModal({ isOpen, onRequestClose }) {
   const [roles, setRoles] = useState([]);
-  const [selectedRole, setSelectedRole] = useState('');
-  const [email, setEmail] = useState('');
-
-  function handleSubmit(event) {
-    event.preventDefault();
-  
-    clienteAxios.post('/invitations', { email, role: selectedRole })
-      .then(response => {
-        console.log('Invitation sent', response.data);
-        onRequestClose();
-      })
-      .catch(error => {
-        console.error('Error sending invitation', error);
-      });
-  }
+  const [invitees, setInvitees] = useState([{ email: '', role: '' }]);
 
   useEffect(() => {
     if (isOpen) {
       clienteAxios.get('/roles')
         .then(response => {
           setRoles(response.data);
-          if (response.data.length > 0) {
-            setSelectedRole(response.data[0]._id);
-          }        
+          setInvitees(invitees.map(invitee => ({
+            ...invitee,
+            role: response.data[0]._id
+          })));
         })
         .catch(error => {
           console.error('Error fetching roles', error);
@@ -36,43 +23,86 @@ function InviteModal({ isOpen, onRequestClose }) {
     }
   }, [isOpen]);
 
+  function handleAddInvitee() {
+    if (invitees[invitees.length - 1].email !== '') {
+      setInvitees([...invitees, { email: '', role: roles.length > 0 ? roles[0]._id : '' }]);
+    }
+  }
+
+  function handleRemoveInvitee(index) {
+    setInvitees(invitees.filter((_, i) => i !== index));
+  }
+
+  function handleInviteeChange(index, event, field) {
+    const newInvitees = [...invitees];
+    newInvitees[index][field] = event.target.value;
+    setInvitees(newInvitees);
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    // Submit logic here
+    onRequestClose();
+  }
 
   return (
     <Modal
-  isOpen={isOpen}
-  onRequestClose={onRequestClose}
-  contentLabel="Invite Modal"
-  className="invite-modal"
->
-  <h2 className="invite-modal-title">Invite New Member</h2>
-  <form onSubmit={handleSubmit} className="invite-form">
-    <label className="invite-form-label">
-      Email
-      <input
-        type="email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        required
-        className="invite-form-input"
-      />
-    </label>
-    <label className="invite-form-label">
-      Role
-      <select
-        value={selectedRole}
-        onChange={e => setSelectedRole(e.target.value)}
-        required
-        className="invite-form-select"
-      >
-        {roles.map(role => (
-          <option key={role._id} value={role._id}>{role.name}</option>
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      contentLabel="Invite Modal"
+      className="invite-modal"
+    >
+      <h2 className="invite-modal-title">Invite New Member</h2>
+      <form onSubmit={handleSubmit} className="invite-form">
+        {invitees.map((invitee, index) => (
+          <div key={index} className="invite-row">
+            <input
+              type="email"
+              value={invitee.email}
+              onChange={(e) => handleInviteeChange(index, e, 'email')}
+              required
+              className="invite-form-input"
+              placeholder="Email"
+            />
+            <select
+              value={invitee.role}
+              onChange={(e) => handleInviteeChange(index, e, 'role')}
+              required
+              className="invite-form-select"
+            >
+              {roles.map(role => (
+                <option key={role._id} value={role._id}>{role.name}</option>
+              ))}
+            </select>
+            {invitees.length > 1 && (
+              <button
+                type="button"
+                onClick={() => handleRemoveInvitee(index)}
+                className="invite-remove-button"
+                title="Remove invite"
+              >
+                <img src="/icons/icons8-delete-94.png" alt="Remove invite" className="invite-remove-icon" />
+              </button>
+            )}
+            {index === invitees.length - 1 && (
+              <button
+                type="button"
+                onClick={handleAddInvitee}
+                className="invite-add-button"
+                disabled={invitee.email === ''}
+                title="Add more rows"
+              >
+                <img src="/icons/plus-member-icon.png" alt="Add more rows" className="invite-add-icon" />
+              </button>
+            )}
+          </div>
         ))}
-      </select>
-    </label>
-    <button type="button" onClick={onRequestClose} className="invite-form-button">Cancel</button>
-    <button type="submit" className="invite-form-button invite-form-button-submit">Send Invites</button>
-  </form>
-</Modal>
+        <div className="invite-form-actions">
+          <button type="button" onClick={onRequestClose} className="invite-form-button">Cancel</button>
+          <button type="submit" className="invite-form-button invite-form-button-submit">Send Invites</button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 
