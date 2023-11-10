@@ -101,11 +101,11 @@ const Sidebar = () => {
         {auth.role.name === 'Admin' && (
         <button
           onClick={() => setIsInviteModalOpen(true)}
-          className="bg-green-600 hover:bg-green-700 text-white uppercase font-bold block mt-5 text-center rounded-lg p-3"
+          className="w-full bg-green-600 hover:bg-green-700 text-white uppercase font-bold mt-5 text-center rounded-lg p-3"
         >
           Invite New Members
         </button>
-      )}
+        )}
       <InviteModal
         isOpen={isInviteModalOpen}
         onRequestClose={() => setIsInviteModalOpen(false)}
