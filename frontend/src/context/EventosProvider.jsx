@@ -365,7 +365,7 @@ const EventosProvider = ({ children }) => {
                     Authorization: `Bearer ${token}`
                 }
             }
-            const { data } = await clienteAxios.post(`/events/colaboradores/${event._id}`, email, config)
+            const { data } = await clienteAxios.post(`/events/colaboradores/${event._id}`, { email, creator: auth._id }, config);
             setAlerta({
                 msg: data.msg,
                 error: false

@@ -22,24 +22,26 @@ const AuthProvider = ({ children }) => {
       if (!token) {
         setCargando(false);
         return;
-      }
+      }  
 
       // send token conig
       const config = {
         headers: {
-          "Conent-Type": "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      };
+      };  
 
       try {
-        const { data } = await clienteAxios("users/perfil", config);
+        const { data } = await clienteAxios("/users/perfil", config);
         setAuth(data);
       } catch (error) {
+        console.error("Authentication error: ", error);
+        localStorage.removeItem("token"); // Clear token if it's invalid
         setAuth({});
       }
       setCargando(false);
-    };
+    };  
     autenticarUsuario();
   }, []);
 

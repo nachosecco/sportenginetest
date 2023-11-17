@@ -39,7 +39,8 @@ const NuevoColaborador = () => {
                             type="button"
                             className="bg-slate-500 px-5 py-2 rounded-lg uppercase text-white font-bold text-sm"
                             onClick={() => agregarColaborador({
-                                email: colaborador.email
+                                email: colaborador.email,
+                                creator: auth._id  // Add this line
                             })}
                         >
                             Agregar al evento
