@@ -49,6 +49,7 @@ const Login = () => {
       
       setAlerta({});
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem('auth', JSON.stringify({ ...response.data, role: response.data.role }));
       setAuth({ ...response.data, role: response.data.role });
       navigate("/events");
       

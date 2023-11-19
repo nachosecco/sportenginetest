@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import clienteAxios from "../config/clienteAxios";
+import { set } from "lodash";
 
 const AuthContext = createContext();
 
@@ -24,7 +25,7 @@ const AuthProvider = ({ children }) => {
         return;
       }  
 
-      // send token conig
+      // send token config
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -35,20 +36,30 @@ const AuthProvider = ({ children }) => {
       try {
         const { data } = await clienteAxios("/users/perfil", config);
         setAuth(data);
+        localStorage.setItem('auth', JSON.stringify(data));
       } catch (error) {
         console.error("Authentication error: ", error);
         localStorage.removeItem("token"); // Clear token if it's invalid
         setAuth({});
       }
       setCargando(false);
-    };  
-    autenticarUsuario();
+    };
+    const storedAuth = localStorage.getItem('auth');
+  
+    if (storedAuth) {
+      setAuth(JSON.parse(storedAuth));
+      setCargando(false);
+    } else {
+      autenticarUsuario();
+    }  
   }, []);
+
 
   const onRegisterWithFirebase = ({ uid, email, name }) => {
     setIsVisible(!isVisible);
     setFirebaseUser({ uid, name, email });
   };
+  
 
   return (
     <AuthContext.Provider
@@ -56,6 +67,7 @@ const AuthProvider = ({ children }) => {
         auth,
         setAuth,
         isVisible,
+        setIsVisible,
         firebaseUser,
         cargando,
         onRegisterWithFirebase,

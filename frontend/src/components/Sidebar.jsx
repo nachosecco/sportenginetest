@@ -10,11 +10,18 @@ const Sidebar = () => {
   const [path, setPath] = useState('');
   const [showPlayerInfo, setShowPlayerInfo] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const { isVisible, setIsVisible } = useAuth();
+  const handleInviteButtonClick = () => setIsVisible(true);
+  const handleModalClose = () => setIsVisible(false);
+
+  console.log(auth.role);
+  // Print role name in console
+    console.log(auth.role.name);
+
   const club = {
     name: "Trebol Rugby",
     logo: "/icons/trebol.png",
   };
-  console.log(auth.role)
 
   useEffect(() => {
     const currentPath = location.pathname.split('/')[1];
@@ -88,11 +95,6 @@ const Sidebar = () => {
           Categorías
         </Link>
       </nav>
-
-
-
-
-
       <div className="mt-5">
         <div className="border-b border-white mt-2"></div>
         <h2 className="text-xl text-center font-semibold mb-2">{club.name}</h2>
@@ -107,8 +109,8 @@ const Sidebar = () => {
         </button>
         )}
       <InviteModal
-        isOpen={isInviteModalOpen}
-        onRequestClose={() => setIsInviteModalOpen(false)}
+        isOpen={isVisible}
+        onRequestClose={handleModalClose}
       />
       </div>
     </aside>
