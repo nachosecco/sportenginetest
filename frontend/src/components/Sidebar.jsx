@@ -11,8 +11,8 @@ const Sidebar = () => {
   const [showPlayerInfo, setShowPlayerInfo] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const { isVisible, setIsVisible } = useAuth();
-  const handleInviteButtonClick = () => setIsVisible(true);
-  const handleModalClose = () => setIsVisible(false);
+  const handleInviteButtonClick = () => setIsInviteModalOpen(true);
+  const handleModalClose = () => setIsInviteModalOpen(false);
 
   console.log(auth.role);
   // Print role name in console
@@ -109,7 +109,7 @@ const Sidebar = () => {
         </button>
         )}
       <InviteModal
-        isOpen={isVisible}
+        isOpen={isInviteModalOpen}
         onRequestClose={handleModalClose}
       />
       </div>
